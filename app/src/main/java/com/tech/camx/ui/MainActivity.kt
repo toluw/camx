@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.widget.TextView
 import android.widget.Toast
 import com.google.ar.core.Anchor
+import com.google.ar.core.Frame
 import com.google.ar.core.HitResult
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
@@ -27,6 +28,7 @@ import com.tech.camx.R
 import com.tech.camx.utils.MIN_OPENGL_VERSION
 import com.tech.camx.utils.TAG
 import java.util.*
+import kotlin.math.sqrt
 
 class MainActivity : AppCompatActivity(), Scene.OnUpdateListener {
 
@@ -119,6 +121,25 @@ class MainActivity : AppCompatActivity(), Scene.OnUpdateListener {
     }
 
     override fun onUpdate(p0: FrameTime?) {
-        TODO("Not yet implemented")
+        val frame: Frame? = arFragment!!.arSceneView.arFrame
+
+        if (currentAnchorNode != null) {
+
+            val objectPose = currentAnchor!!.pose
+            val cameraPose = frame!!.camera.pose
+
+            val dx = objectPose.tx() - cameraPose.tx()
+            val dy = objectPose.ty() - cameraPose.ty()
+            val dz = objectPose.tz() - cameraPose.tz()
+
+            ///Compute the straight-line distance.
+            val distanceMeters = sqrt((dx * dx + dy * dy + dz * dz).toDouble()).toFloat()
+
+            val text = "Distance from camera: $distanceMeters metres"
+
+            distanceTextView?.text = text
+
+
+        }
     }
 }
